@@ -10,30 +10,31 @@ from database import fetch_one
 
 def init_admin():
     """إنشاء حساب إدمن افتراضي"""
-    email = "admin"
+    username = "admin"
     password = "admin123"
     
     # التحقق من عدم وجود المستخدم بالفعل
     existing_user = fetch_one(
-        "select id from users where email = %s",
-        (email,)
+        "select id from users where username = %s",
+        (username,)
     )
     
     if existing_user:
-        print(f"المستخدم {email} موجود بالفعل")
+        print(f"المستخدم {username} موجود بالفعل")
         return
     
     try:
         # إنشاء المستخدم الإدمن
         result = create_user(
-            email=email,
+            username=username,
             password=password,
             full_name="المسؤول",
+            email="admin@accounting.local",
             role="admin"
         )
         if result:
             print(f"✓ تم إنشاء حساب الإدمن بنجاح")
-            print(f"  البريد: {email}")
+            print(f"  اسم المستخدم: {username}")
             print(f"  كلمة المرور: {password}")
             print(f"  الدور: admin")
         else:
