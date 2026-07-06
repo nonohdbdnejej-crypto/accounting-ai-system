@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}تفاصيل القيد #{{ entry.entry_number }}{% endblock %}
+{% block content %}
+<div class="topbar">
+    <h2>قيد رقم {{ entry.entry_number }}</h2>
+    <a href="{{ url_for('journal.index') }}" class="btn secondary">رجوع</a>
+</div>
+
+<div class="card">
+    <p><strong>التاريخ:</strong> {{ entry.entry_date }}</p>
+    <p><strong>البيان:</strong> {{ entry.description or '-' }}</p>
+    <p><strong>المرجع:</strong> {{ entry.reference or '-' }}</p>
+
+    <table class="ledger" style="margin-top:16px;">
+        <thead>
+            <tr><th>الحساب</th><th>الوصف</th><th>مدين</th><th>دائن</th></tr>
+        </thead>
+        <tbody>
+            {% for l in entry.lines %}
+            <tr>
+                <td>{{ l.account_code }} - {{ l.account_name }}</td>
+                <td>{{ l.description or '-' }}</td>
+                <td class="numeric">{{ "%.2f"|format(l.debit) if l.debit else '' }}</td>
+                <td class="numeric">{{ "%.2f"|format(l.credit) if l.credit else '' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if entry.is_reversed %}
+    <p style="margin-top:20px; color:var(--ink-soft);">
+        ⚠️ القيد ده اتعكس بالفعل بواسطة قيد آخر.
+        {% if entry.reversed_by_entry_id %}
+        <a href="{{ url_for('journal.view', entry_id=entry.reversed_by_entry_id) }}">عرض قيد العكس</a>
+        {% endif %}
+    </p>
+    {% elif entry.source_type == 'reversal' %}
+    <p style="margin-top:20px; color:var(--ink-soft);">هذا قيد عكسي (تلقائي) - مينفعش يتعكس تاني.</p>
+    {% else %}
+    <form method="POST" action="{{ url_for('journal.reverse', entry_id=entry.id) }}" style="margin-top:20px;"
+          onsubmit="return confirm('هيتم إنشاء قيد عكسي يلغي أثر القيد ده مع الاحتفاظ به في السجل. متابعة؟');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="text" name="reason" placeholder="سبب العكس (اختياري)" style="margin-bottom:8px;">
+        <button type="submit" class="btn danger">عكس القيد</button>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}

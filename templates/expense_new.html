@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}تسجيل مصروف{% endblock %}
+{% block content %}
+<div class="topbar">
+    <h2>تسجيل مصروف</h2>
+    <a href="{{ url_for('payments.index') }}" class="btn secondary">رجوع</a>
+</div>
+
+<form method="POST" action="{{ url_for('payments.create_expense') }}" id="expense-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="card" style="max-width:500px;">
+        <div class="field">
+            <label>نوع المصروف</label>
+            <select name="expense_account_id" required>
+                {% for a in expense_accounts %}
+                <option value="{{ a.id }}">{{ a.code }} - {{ a.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="field">
+            <label>المبلغ</label>
+            <input type="number" name="amount" step="0.01" min="0.01" required>
+        </div>
+        <div class="field">
+            <label>التاريخ</label>
+            <input type="date" name="expense_date" required>
+        </div>
+        <div class="field">
+            <label>الدفع من</label>
+            <select name="cash_account_id" required>
+                {% for a in cash_accounts %}
+                <option value="{{ a.id }}">{{ a.code }} - {{ a.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="field">
+            <label>وصف المصروف</label>
+            <input type="text" name="description" placeholder="مثال: إيجار شهر يوليو">
+        </div>
+        <button type="submit" class="btn">حفظ المصروف</button>
+    </div>
+</form>
+{% endblock %}

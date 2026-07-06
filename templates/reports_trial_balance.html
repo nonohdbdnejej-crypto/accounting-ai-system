@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}ميزان المراجعة{% endblock %}
+{% block content %}
+<div class="topbar">
+    <h2>ميزان المراجعة</h2>
+    <div style="display:flex; gap:10px;">
+        <a href="{{ url_for('reports.trial_balance') }}" class="btn">ميزان المراجعة</a>
+        <a href="{{ url_for('reports.income_statement') }}" class="btn secondary">قائمة الدخل</a>
+        <a href="{{ url_for('reports.balance_sheet') }}" class="btn secondary">الميزانية العمومية</a>
+    </div>
+</div>
+
+<div class="card">
+    <table class="ledger">
+        <thead><tr><th>الكود</th><th>الحساب</th><th>مدين</th><th>دائن</th></tr></thead>
+        <tbody>
+            {% for r in rows %}
+            <tr>
+                <td>{{ r.code }}</td>
+                <td>{{ r.name }}</td>
+                <td class="numeric">{{ "%.2f"|format(r.total_debit) if r.total_debit else '' }}</td>
+                <td class="numeric">{{ "%.2f"|format(r.total_credit) if r.total_credit else '' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2">الإجمالي</td>
+                <td class="numeric">{{ "%.2f"|format(total_debit) }}</td>
+                <td class="numeric">{{ "%.2f"|format(total_credit) }}</td>
+            </tr>
+        </tfoot>
+    </table>
+    {% if (total_debit - total_credit)|abs > 0.01 %}
+    <div class="flash error" style="margin-top:16px;">⚠️ الميزان غير متوازن! راجع القيود.</div>
+    {% else %}
+    <div class="flash success" style="margin-top:16px;">✓ الميزان متوازن</div>
+    {% endif %}
+</div>
+{% endblock %}

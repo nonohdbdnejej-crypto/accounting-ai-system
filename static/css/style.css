@@ -1,0 +1,219 @@
+/* ==========================================================
+   نظام محاسبة - الهوية البصرية
+   الفكرة: دفتر أستاذ محاسبي حقيقي (Ledger) - أخضر داكن + نحاسي
+   بدل الألوان الافتراضية (كريمي + تراكوتا) اللي بيستخدمها كل تطبيقات الـ AI
+   ========================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Markazi+Text:wght@500;700&family=Cairo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+:root {
+    --ink: #12221E;
+    --ink-soft: #3C4F49;
+    --paper: #EEF2EF;
+    --paper-raised: #FFFFFF;
+    --primary: #0E4D46;
+    --primary-dark: #082F2A;
+    --primary-light: #E4EEEC;
+    --accent: #B8892B;
+    --accent-light: #F3E7CC;
+    --danger: #A23B3B;
+    --danger-light: #F6E4E2;
+    --success: #2F7A4F;
+    --border: #D3DBD6;
+    --radius: 6px;
+    --shadow: 0 2px 10px rgba(18, 34, 30, 0.06);
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Cairo', sans-serif;
+    direction: rtl;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+h1, h2, h3, .display {
+    font-family: 'Markazi Text', 'Cairo', serif;
+    font-weight: 700;
+    color: var(--primary-dark);
+    letter-spacing: 0.3px;
+}
+
+.numeric, .amount, table td.num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    direction: ltr;
+    text-align: left;
+    unicode-bidi: isolate;
+}
+
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ---------- الهيكل العام ---------- */
+.app-shell { display: flex; min-height: 100vh; }
+
+.sidebar {
+    width: 240px;
+    background: var(--primary-dark);
+    color: #EAF2EF;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 0;
+}
+
+.sidebar .brand {
+    padding: 0 20px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    margin-bottom: 12px;
+}
+
+.sidebar .brand .seal {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--primary-dark);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Markazi Text', serif;
+    font-weight: 700; font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.sidebar .brand h1 { color: #fff; font-size: 20px; margin: 0; }
+.sidebar .brand p { color: #9FC0B8; font-size: 12px; margin: 4px 0 0; }
+
+.sidebar nav { display: flex; flex-direction: column; gap: 2px; padding: 0 12px; }
+
+.sidebar nav a {
+    color: #CBE0DA;
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    display: flex; align-items: center; gap: 10px;
+}
+.sidebar nav a:hover, .sidebar nav a.active {
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    text-decoration: none;
+}
+.sidebar nav a.active { border-right: 3px solid var(--accent); }
+
+.sidebar .logout { margin-top: auto; padding: 0 20px; }
+
+.main-content { flex: 1; padding: 28px 36px; max-width: 1200px; }
+
+.topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 24px;
+}
+
+/* ---------- بطاقات ---------- */
+.card {
+    background: var(--paper-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: var(--paper-raised);
+    border: 1px solid var(--border);
+    border-right: 4px solid var(--primary);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+}
+.stat-card .label { font-size: 13px; color: var(--ink-soft); margin-bottom: 6px; }
+.stat-card .value { font-family: 'IBM Plex Mono', monospace; font-size: 24px; font-weight: 600; color: var(--primary-dark); direction: ltr; text-align: right; }
+
+/* ---------- جداول (شكل دفتر الأستاذ) ---------- */
+table.ledger {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+table.ledger th {
+    text-align: right;
+    padding: 10px 12px;
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    border-bottom: 2px solid var(--primary);
+    font-weight: 600;
+}
+table.ledger td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+}
+table.ledger tr:hover td { background: #F7FAF9; }
+table.ledger tfoot td {
+    font-weight: 700;
+    border-top: 2px solid var(--primary);
+    border-bottom: 4px double var(--primary-dark);
+}
+
+/* ---------- نماذج ---------- */
+label { display: block; font-size: 13px; color: var(--ink-soft); margin-bottom: 5px; }
+input, select, textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: 'Cairo', sans-serif;
+    font-size: 14px;
+    background: #fff;
+    color: var(--ink);
+}
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+.field { margin-bottom: 14px; }
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: var(--radius);
+    border: none;
+    background: var(--primary);
+    color: #fff;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+.btn:hover { background: var(--primary-dark); text-decoration: none; }
+.btn.secondary { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
+.btn.secondary:hover { background: var(--primary-light); }
+.btn.danger { background: var(--danger); }
+
+/* ---------- تنبيهات ---------- */
+.flash { padding: 12px 16px; border-radius: var(--radius); margin-bottom: 16px; font-size: 14px; }
+.flash.success { background: #E6F2EA; color: var(--success); border: 1px solid #BEE0CB; }
+.flash.error { background: var(--danger-light); color: var(--danger); border: 1px solid #EAC4C0; }
+
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+.badge.sale, .badge.receipt { background: var(--primary-light); color: var(--primary-dark); }
+.badge.purchase, .badge.payment { background: var(--accent-light); color: var(--accent); }
+.badge.draft { background: #eee; color: #777; }
+.badge.paid { background: #E6F2EA; color: var(--success); }
+
+@media (max-width: 800px) {
+    .app-shell { flex-direction: column; }
+    .sidebar { width: 100%; }
+    .main-content { padding: 20px; }
+}

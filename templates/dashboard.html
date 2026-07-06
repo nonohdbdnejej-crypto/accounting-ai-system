@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}لوحة التحكم{% endblock %}
+{% block content %}
+
+<div class="topbar">
+    <h2>لوحة التحكم</h2>
+</div>
+
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="label">إجمالي مستحقات العملاء</div>
+        <div class="value">{{ "%.2f"|format(stats.total_receivable) }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="label">إجمالي مستحقات الموردين</div>
+        <div class="value">{{ "%.2f"|format(stats.total_payable) }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="label">رصيد الخزينة والبنك</div>
+        <div class="value">{{ "%.2f"|format(stats.cash_balance) }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="label">عدد الفواتير</div>
+        <div class="value">{{ stats.invoice_count }}</div>
+    </div>
+</div>
+
+<div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px;">
+    <div class="card">
+        <h3>الإيرادات والمصروفات (آخر 6 شهور)</h3>
+        <canvas id="monthlyChart" height="110"></canvas>
+    </div>
+    <div class="card">
+        <h3>حالة الفواتير</h3>
+        <canvas id="statusChart" height="110"></canvas>
+    </div>
+</div>
+
+<div class="card">
+    <h3>روابط سريعة</h3>
+    <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:12px;">
+        <a href="{{ url_for('invoices.new', type='sale') }}" class="btn">+ فاتورة مبيعات</a>
+        <a href="{{ url_for('invoices.new', type='purchase') }}" class="btn secondary">+ فاتورة مشتريات</a>
+        <a href="{{ url_for('payments.new_expense') }}" class="btn secondary">+ تسجيل مصروف</a>
+        <a href="{{ url_for('journal.new') }}" class="btn secondary">+ قيد يدوي</a>
+        <a href="{{ url_for('reports.trial_balance') }}" class="btn secondary">ميزان المراجعة</a>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+{% endblock %}
+

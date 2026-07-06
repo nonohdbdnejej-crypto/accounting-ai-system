@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>{% block title %}نظام المحاسبة{% endblock %}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="seal">₪</div>
+            <h1>دفتر الأستاذ</h1>
+            <p>نظام محاسبة احترافي</p>
+        </div>
+        <nav>
+            <a href="{{ url_for('main.dashboard') }}" class="{{ 'active' if request.endpoint == 'main.dashboard' }}">🏠 لوحة التحكم</a>
+            <a href="{{ url_for('journal.index') }}" class="{{ 'active' if request.blueprint == 'journal' }}">📒 القيود اليومية</a>
+            <a href="{{ url_for('accounts.index') }}" class="{{ 'active' if request.blueprint == 'accounts' }}">🗂️ دليل الحسابات</a>
+            <a href="{{ url_for('invoices.index') }}" class="{{ 'active' if request.blueprint == 'invoices' }}">🧾 الفواتير</a>
+            <a href="{{ url_for('payments.index') }}" class="{{ 'active' if request.blueprint == 'payments' }}">💰 المقبوضات/المدفوعات</a>
+            <a href="{{ url_for('contacts.index') }}" class="{{ 'active' if request.blueprint == 'contacts' }}">👥 العملاء والموردون</a>
+            <a href="{{ url_for('products.index') }}" class="{{ 'active' if request.blueprint == 'products' }}">📦 المنتجات والمخزون</a>
+            <a href="{{ url_for('reports.trial_balance') }}" class="{{ 'active' if request.blueprint == 'reports' }}">📊 التقارير المالية</a>
+            {% if current_user.is_authenticated and current_user.role == 'admin' %}
+            <a href="{{ url_for('admin.audit_log') }}" class="{{ 'active' if request.blueprint == 'admin' }}">🕵️ سجل العمليات</a>
+            {% endif %}
+        </nav>
+        <div class="logout">
+            <a href="{{ url_for('auth.logout') }}" class="btn secondary" style="display:block; text-align:center;">تسجيل الخروج</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+</div>
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

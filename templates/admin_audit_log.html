@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}سجل العمليات{% endblock %}
+{% block content %}
+<div class="topbar">
+    <h2>سجل العمليات (Audit Log)</h2>
+    <a href="{{ url_for('admin.download_backup') }}" class="btn">⬇️ تحميل نسخة احتياطية (JSON)</a>
+</div>
+
+<div class="card" style="display:flex; gap:10px; flex-wrap:wrap;">
+    <a href="{{ url_for('admin.audit_log') }}" class="btn {{ 'secondary' if current_type }}">الكل</a>
+    <a href="{{ url_for('admin.audit_log', entity_type='invoice') }}" class="btn {{ 'secondary' if current_type != 'invoice' }}">فواتير</a>
+    <a href="{{ url_for('admin.audit_log', entity_type='journal_entry') }}" class="btn {{ 'secondary' if current_type != 'journal_entry' }}">قيود</a>
+    <a href="{{ url_for('admin.audit_log', entity_type='payment') }}" class="btn {{ 'secondary' if current_type != 'payment' }}">مدفوعات</a>
+    <a href="{{ url_for('admin.audit_log', entity_type='account') }}" class="btn {{ 'secondary' if current_type != 'account' }}">حسابات</a>
+    <a href="{{ url_for('admin.audit_log', entity_type='contact') }}" class="btn {{ 'secondary' if current_type != 'contact' }}">عملاء/موردين</a>
+</div>
+
+<div class="card">
+    <table class="ledger">
+        <thead>
+            <tr><th>التاريخ</th><th>المستخدم</th><th>العملية</th><th>النوع</th><th>IP</th></tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td class="numeric">{{ log.created_at }}</td>
+                <td>{{ log.user_email or '-' }}</td>
+                <td>
+                    <span class="badge {{ 'paid' if log.action == 'create' else ('purchase' if log.action == 'update' else 'draft') }}">
+                        {{ {'create':'إنشاء','update':'تعديل','delete':'حذف'}.get(log.action, log.action) }}
+                    </span>
+                </td>
+                <td>{{ log.entity_type }}</td>
+                <td class="numeric">{{ log.ip_address or '-' }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" style="text-align:center; color:var(--ink-soft);">لا يوجد سجل بعد</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

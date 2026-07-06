@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}القيود اليومية{% endblock %}
+{% block content %}
+<div class="topbar">
+    <h2>القيود اليومية</h2>
+    <a href="{{ url_for('journal.new') }}" class="btn">+ قيد جديد</a>
+</div>
+
+<div class="card">
+    <table class="ledger">
+        <thead>
+            <tr><th>#</th><th>التاريخ</th><th>البيان</th><th>المرجع</th><th>الإجمالي</th><th></th></tr>
+        </thead>
+        <tbody>
+            {% for e in entries %}
+            <tr>
+                <td>{{ e.entry_number }}</td>
+                <td>{{ e.entry_date }}</td>
+                <td>{{ e.description or '-' }}</td>
+                <td>{{ e.reference or '-' }}</td>
+                <td class="numeric">{{ "%.2f"|format(e.total or 0) }}</td>
+                <td>
+                    <a href="{{ url_for('journal.view', entry_id=e.id) }}">عرض</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" style="text-align:center; color:var(--ink-soft);">لا توجد قيود بعد</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}الميزانية العمومية{% endblock %}
+{% block content %}
+<div class="topbar">
+    <h2>الميزانية العمومية</h2>
+    <div style="display:flex; gap:10px;">
+        <a href="{{ url_for('reports.trial_balance') }}" class="btn secondary">ميزان المراجعة</a>
+        <a href="{{ url_for('reports.income_statement') }}" class="btn secondary">قائمة الدخل</a>
+        <a href="{{ url_for('reports.balance_sheet') }}" class="btn">الميزانية العمومية</a>
+    </div>
+</div>
+
+<div class="card">
+    <h3>الأصول</h3>
+    <table class="ledger">
+        <tbody>
+            {% for a in assets %}
+            <tr><td>{{ a.name }}</td><td class="numeric">{{ "%.2f"|format(a.balance) }}</td></tr>
+            {% endfor %}
+        </tbody>
+        <tfoot><tr><td>إجمالي الأصول</td><td class="numeric">{{ "%.2f"|format(total_assets) }}</td></tr></tfoot>
+    </table>
+</div>
+
+<div class="card">
+    <h3>الالتزامات</h3>
+    <table class="ledger">
+        <tbody>
+            {% for l in liabilities %}
+            <tr><td>{{ l.name }}</td><td class="numeric">{{ "%.2f"|format(l.balance) }}</td></tr>
+            {% endfor %}
+        </tbody>
+        <tfoot><tr><td>إجمالي الالتزامات</td><td class="numeric">{{ "%.2f"|format(total_liabilities) }}</td></tr></tfoot>
+    </table>
+</div>
+
+<div class="card">
+    <h3>حقوق الملكية</h3>
+    <table class="ledger">
+        <tbody>
+            {% for e in equity %}
+            <tr><td>{{ e.name }}</td><td class="numeric">{{ "%.2f"|format(e.balance) }}</td></tr>
+            {% endfor %}
+        </tbody>
+        <tfoot><tr><td>إجمالي حقوق الملكية</td><td class="numeric">{{ "%.2f"|format(total_equity) }}</td></tr></tfoot>
+    </table>
+</div>
+
+{% set diff = total_assets - (total_liabilities + total_equity) %}
+{% if diff|abs > 0.01 %}
+<div class="flash error">⚠️ الأصول لا تساوي (الالتزامات + حقوق الملكية)! الفرق: {{ "%.2f"|format(diff) }}</div>
+{% else %}
+<div class="flash success">✓ الميزانية متوازنة: الأصول = الالتزامات + حقوق الملكية</div>
+{% endif %}
+{% endblock %}

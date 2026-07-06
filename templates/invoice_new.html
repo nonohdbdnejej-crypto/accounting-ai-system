@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}فاتورة {{ 'مبيعات' if type == 'sale' else 'مشتريات' }} جديدة{% endblock %}
+{% block content %}
+
+<div class="topbar">
+    <h2>فاتورة {{ 'مبيعات' if type == 'sale' else 'مشتريات' }} جديدة</h2>
+    <a href="{{ url_for('invoices.index') }}" class="btn secondary">رجوع للفواتير</a>
+</div>
+
+<form method="POST" action="{{ url_for('invoices.create') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="type" value="{{ type }}">
+
+    <div class="card">
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;">
+            <div class="field">
+                <label>{{ 'العميل' if type == 'sale' else 'المورد' }}</label>
+                <select name="contact_id" required>
+                    <option value="">-- اختر --</option>
+                    {% for c in contacts %}
+                    <option value="{{ c.id }}">{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="field">
+                <label>تاريخ الفاتورة</label>
+                <input type="date" name="invoice_date" required>
+            </div>
+            <div class="field">
+                <label>تاريخ الاستحقاق (اختياري)</label>
+                <input type="date" name="due_date">
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>بنود الفاتورة</h3>
+        <table class="ledger" id="invoice-items-table">
+            <thead>
+                <tr>
+                    <th>المنتج</th>
+                    <th>الوصف</th>
+                    <th>الكمية</th>
+                    <th>سعر الوحدة</th>
+                    <th>الإجمالي</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button type="button" id="add-item-row" class="btn secondary" style="margin-top:12px;">+ إضافة بند</button>
+
+        <div style="max-width:320px; margin-right:auto; margin-top:20px;">
+            <div class="field">
+                <label>نسبة الضريبة (%)</label>
+                <input type="number" id="tax_rate" name="tax_rate" value="0" min="0" step="0.01">
+            </div>
+            <table class="ledger">
+                <tr><td>الإجمالي الفرعي</td><td class="numeric" id="invoice-subtotal">0.00</td></tr>
+                <tr><td>الضريبة</td><td class="numeric" id="invoice-tax-total">0.00</td></tr>
+                <tfoot>
+                <tr><td>الإجمالي الكلي</td><td class="numeric" id="invoice-grand-total">0.00</td></tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="field">
+            <label>ملاحظات</label>
+            <textarea name="notes" rows="2"></textarea>
+        </div>
+        <button type="submit" class="btn">حفظ الفاتورة وإنشاء القيد المحاسبي</button>
+    </div>
+</form>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    window.PRODUCTS_DATA = {{ products|tojson }};
+</script>
+{% endblock %}

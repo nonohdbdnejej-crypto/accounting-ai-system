@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}دليل الحسابات{% endblock %}
+{% block content %}
+<div class="topbar">
+    <h2>دليل الحسابات</h2>
+</div>
+
+<div class="card">
+    <h3>إضافة حساب جديد</h3>
+    <form method="POST" action="{{ url_for('accounts.create') }}" style="display:grid; grid-template-columns:1fr 2fr 1fr 1fr; gap:12px; align-items:end;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="field"><label>الكود</label><input type="text" name="code" required></div>
+        <div class="field"><label>الاسم</label><input type="text" name="name" required></div>
+        <div class="field">
+            <label>النوع</label>
+            <select name="type" required>
+                <option value="asset">أصول</option>
+                <option value="liability">التزامات</option>
+                <option value="equity">حقوق ملكية</option>
+                <option value="revenue">إيرادات</option>
+                <option value="expense">مصروفات</option>
+            </select>
+        </div>
+        <button type="submit" class="btn">إضافة</button>
+    </form>
+</div>
+
+<div class="card">
+    <table class="ledger">
+        <thead><tr><th>الكود</th><th>الاسم</th><th>النوع</th><th></th></tr></thead>
+        <tbody>
+            {% for a in accounts %}
+            <tr>
+                <td class="numeric">{{ a.code }}</td>
+                <td>{{ a.name }}</td>
+                <td>
+                    {% if a.type == 'asset' %}أصول{% elif a.type == 'liability' %}التزامات
+                    {% elif a.type == 'equity' %}حقوق ملكية{% elif a.type == 'revenue' %}إيرادات
+                    {% else %}مصروفات{% endif %}
+                </td>
+                <td>
+                    <form method="POST" action="{{ url_for('accounts.deactivate', account_id=a.id) }}" style="display:inline;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn danger" style="padding:4px 10px;">إلغاء تفعيل</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

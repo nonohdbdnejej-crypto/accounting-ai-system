@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}كشف حساب {{ contact.name }}{% endblock %}
+{% block content %}
+<div class="topbar">
+    <h2>كشف حساب: {{ contact.name }}</h2>
+    <a href="{{ url_for('contacts.index') }}" class="btn secondary">رجوع</a>
+</div>
+
+<div class="card">
+    <h3>الفواتير</h3>
+    <table class="ledger">
+        <thead><tr><th>#</th><th>التاريخ</th><th>الإجمالي</th><th>الحالة</th></tr></thead>
+        <tbody>
+            {% for inv in data.invoices %}
+            <tr>
+                <td>{{ inv.invoice_number }}</td>
+                <td>{{ inv.invoice_date }}</td>
+                <td class="numeric">{{ "%.2f"|format(inv.total) }}</td>
+                <td><span class="badge {{ inv.status }}">{{ inv.status }}</span></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" style="text-align:center; color:var(--ink-soft);">لا توجد فواتير</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h3>المدفوعات</h3>
+    <table class="ledger">
+        <thead><tr><th>التاريخ</th><th>النوع</th><th>المبلغ</th></tr></thead>
+        <tbody>
+            {% for p in data.payments %}
+            <tr>
+                <td>{{ p.payment_date }}</td>
+                <td>{{ 'تحصيل' if p.type == 'receipt' else 'سداد' }}</td>
+                <td class="numeric">{{ "%.2f"|format(p.amount) }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="3" style="text-align:center; color:var(--ink-soft);">لا توجد مدفوعات</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

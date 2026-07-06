@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}قائمة الدخل{% endblock %}
+{% block content %}
+<div class="topbar">
+    <h2>قائمة الدخل</h2>
+    <div style="display:flex; gap:10px;">
+        <a href="{{ url_for('reports.trial_balance') }}" class="btn secondary">ميزان المراجعة</a>
+        <a href="{{ url_for('reports.income_statement') }}" class="btn">قائمة الدخل</a>
+        <a href="{{ url_for('reports.balance_sheet') }}" class="btn secondary">الميزانية العمومية</a>
+    </div>
+</div>
+
+<div class="card">
+    <h3>الإيرادات</h3>
+    <table class="ledger">
+        <tbody>
+            {% for r in revenues %}
+            <tr><td>{{ r.name }}</td><td class="numeric">{{ "%.2f"|format(r.balance) }}</td></tr>
+            {% endfor %}
+        </tbody>
+        <tfoot><tr><td>إجمالي الإيرادات</td><td class="numeric">{{ "%.2f"|format(total_revenue) }}</td></tr></tfoot>
+    </table>
+</div>
+
+<div class="card">
+    <h3>المصروفات</h3>
+    <table class="ledger">
+        <tbody>
+            {% for e in expenses %}
+            <tr><td>{{ e.name }}</td><td class="numeric">{{ "%.2f"|format(e.balance) }}</td></tr>
+            {% endfor %}
+        </tbody>
+        <tfoot><tr><td>إجمالي المصروفات</td><td class="numeric">{{ "%.2f"|format(total_expense) }}</td></tr></tfoot>
+    </table>
+</div>
+
+<div class="card">
+    <h3>صافي الربح / الخسارة</h3>
+    <p class="numeric" style="font-size:24px; font-weight:700; color:{{ 'var(--success)' if net_profit >= 0 else 'var(--danger)' }};">
+        {{ "%.2f"|format(net_profit) }}
+    </p>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}العملاء والموردون{% endblock %}
+{% block content %}
+<div class="topbar"><h2>العملاء والموردون</h2></div>
+
+<div class="card">
+    <h3>إضافة جديد</h3>
+    <form method="POST" action="{{ url_for('contacts.create') }}" style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px; align-items:end;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="field"><label>الاسم</label><input type="text" name="name" required></div>
+        <div class="field">
+            <label>النوع</label>
+            <select name="type" required>
+                <option value="client">عميل</option>
+                <option value="supplier">مورد</option>
+                <option value="both">الاثنين</option>
+            </select>
+        </div>
+        <div class="field"><label>الهاتف</label><input type="text" name="phone"></div>
+        <button type="submit" class="btn">إضافة</button>
+    </form>
+</div>
+
+<div class="card">
+    <table class="ledger">
+        <thead><tr><th>الاسم</th><th>النوع</th><th>الهاتف</th><th></th></tr></thead>
+        <tbody>
+            {% for c in contacts %}
+            <tr>
+                <td>{{ c.name }}</td>
+                <td>{{ {'client':'عميل','supplier':'مورد','both':'الاثنين'}[c.type] }}</td>
+                <td>{{ c.phone or '-' }}</td>
+                <td><a href="{{ url_for('contacts.statement', contact_id=c.id) }}">كشف حساب</a></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" style="text-align:center; color:var(--ink-soft);">لا يوجد عملاء/موردون بعد</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

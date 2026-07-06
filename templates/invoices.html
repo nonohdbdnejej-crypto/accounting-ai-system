@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}الفواتير{% endblock %}
+{% block content %}
+<div class="topbar">
+    <h2>الفواتير</h2>
+    <div style="display:flex; gap:10px;">
+        <a href="{{ url_for('invoices.new', type='sale') }}" class="btn">+ فاتورة مبيعات</a>
+        <a href="{{ url_for('invoices.new', type='purchase') }}" class="btn secondary">+ فاتورة مشتريات</a>
+    </div>
+</div>
+
+<div class="card" style="display:flex; gap:10px;">
+    <a href="{{ url_for('invoices.index') }}" class="btn {{ 'secondary' if current_type }}">الكل</a>
+    <a href="{{ url_for('invoices.index', type='sale') }}" class="btn {{ 'secondary' if current_type != 'sale' }}">مبيعات</a>
+    <a href="{{ url_for('invoices.index', type='purchase') }}" class="btn {{ 'secondary' if current_type != 'purchase' }}">مشتريات</a>
+</div>
+
+<div class="card">
+    <table class="ledger">
+        <thead><tr><th>#</th><th>النوع</th><th>العميل/المورد</th><th>التاريخ</th><th>الإجمالي</th><th>الحالة</th><th></th></tr></thead>
+        <tbody>
+            {% for inv in invoices %}
+            <tr>
+                <td>{{ inv.invoice_number }}</td>
+                <td><span class="badge {{ inv.type }}">{{ 'مبيعات' if inv.type == 'sale' else 'مشتريات' }}</span></td>
+                <td>{{ inv.contact_name or '-' }}</td>
+                <td>{{ inv.invoice_date }}</td>
+                <td class="numeric">{{ "%.2f"|format(inv.total) }}</td>
+                <td>
+                    <span class="badge {{ inv.status }}">{{ inv.status }}</span>
+                    {% if inv.is_overdue %}<span class="badge purchase" style="background:var(--danger-light); color:var(--danger);">متأخرة</span>{% endif %}
+                </td>
+                <td><a href="{{ url_for('invoices.view', invoice_id=inv.id) }}">عرض</a></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="7" style="text-align:center; color:var(--ink-soft);">لا توجد فواتير</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

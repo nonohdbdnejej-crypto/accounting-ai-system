@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}فاتورة #{{ invoice.invoice_number }}{% endblock %}
+{% block content %}
+<div class="topbar">
+    <h2>فاتورة #{{ invoice.invoice_number }}</h2>
+    <div style="display:flex; gap:10px;">
+        <a href="{{ url_for('invoices.download_pdf', invoice_id=invoice.id) }}" class="btn">⬇️ تحميل PDF</a>
+        <a href="{{ url_for('invoices.index') }}" class="btn secondary">رجوع</a>
+    </div>
+</div>
+
+<div class="card">
+    <p><strong>{{ 'العميل' if invoice.type == 'sale' else 'المورد' }}:</strong> {{ invoice.contact_name }}</p>
+    <p><strong>التاريخ:</strong> {{ invoice.invoice_date }}</p>
+    <p><strong>الحالة:</strong> <span class="badge {{ invoice.status }}">{{ invoice.status }}</span></p>
+
+    <table class="ledger" style="margin-top:16px;">
+        <thead><tr><th>الوصف</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead>
+        <tbody>
+            {% for item in invoice.items %}
+            <tr>
+                <td>{{ item.description or '-' }}</td>
+                <td class="numeric">{{ item.quantity }}</td>
+                <td class="numeric">{{ "%.2f"|format(item.unit_price) }}</td>
+                <td class="numeric">{{ "%.2f"|format(item.total) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr><td colspan="3">الإجمالي الفرعي</td><td class="numeric">{{ "%.2f"|format(invoice.subtotal) }}</td></tr>
+            <tr><td colspan="3">الضريبة</td><td class="numeric">{{ "%.2f"|format(invoice.tax_total) }}</td></tr>
+            <tr><td colspan="3">الإجمالي الكلي</td><td class="numeric">{{ "%.2f"|format(invoice.total) }}</td></tr>
+        </tfoot>
+    </table>
+
+    {% if invoice.journal_entry_id %}
+    <p style="margin-top:16px;">
+        <a href="{{ url_for('journal.view', entry_id=invoice.journal_entry_id) }}">عرض القيد المحاسبي المرتبط ←</a>
+    </p>
+    {% endif %}
+</div>
+{% endblock %}
